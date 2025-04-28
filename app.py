@@ -99,14 +99,26 @@ def thank_you():
     # print("AI:", result.content)
     # print("*" * 10)
     return result.content
-# Read the resume
-resume_path = input("Enter the path to your resume file (e.g., Resume.md): ")
-resume = ""
-with open(resume_path, "r") as file:
-    resume = file.read()
+def get_resume():
+    while True:
+        try:
+            # Ask the user for the resume path
+            resume_path = input("Enter the path to your resume file (e.g., Resume.md): ")
+            
+            # Open the file and read its content
+            with open(resume_path, "r") as file:
+                resume = file.read()
+            
+            # Return the resume content if successfully read
+            return resume
+        
+        except FileNotFoundError:
+            print("File not found. Please reenter the correct path.")
+        except Exception as e:
+            print(f"An error occurred: {e}. Please try again.")
 
 # Add initial system message
-formatted_message = system_prompt.format(resume=resume)
+formatted_message = system_prompt.format(resume=get_resume())
 messages.append(SystemMessage(content=formatted_message))
 
 # Interview loop
