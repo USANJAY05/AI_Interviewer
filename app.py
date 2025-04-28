@@ -1,12 +1,15 @@
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 import pyttsx3
+import speech_recognition as sr
+
 # Initialize model
 llm = ChatOllama(model="gemma3:latest")
 messages = []
 
 # Initialize text-to-speech engine
 engine = pyttsx3.init()
+recognizer = sr.Recognizer()
 def text_to_speak(text):
     # Set voice properties if you want
     engine.setProperty('rate', 130)  # Speed
@@ -14,17 +17,41 @@ def text_to_speak(text):
     engine.say(text)
     engine.runAndWait()
 
+# Start listening for input
+def speech_to_text():
+    with sr.Microphone() as source:
+        print("Listening for your speech... Please speak now.")
+        # Adjust for ambient noise
+        recognizer.adjust_for_ambient_noise(source)
+
+        while True:  # Continuously listen until speech is detected
+            try:
+                # Listen to the source (microphone) for speech
+                user_input = recognizer.listen(source, timeout=5)
+
+                # Recognize the speech using Google Web Speech API
+                recognized_text = recognizer.recognize_google(user_input)
+                print(f"You said: {recognized_text}")
+                return recognized_text  # Return recognized text and stop listening
+            except sr.UnknownValueError:
+                print("Sorry, I could not understand the audio. Please try again.")
+            except sr.RequestError as e:
+                print(f"Could not request results from Google Speech Recognition service; {e}")
+                break  # Exit the loop if there's an issue with the service
+
 # System prompt
 system_prompt = (
     "You are an AI interviewer. Start by asking the candidate to introduce themselves, "
     "including their experience, skills, and a brief summary of their resume. "
     "Then, ask a general question like 'What inspired you to pursue a career in full-stack development?' "
-    "After each response, ask relevant follow-up questions based on their answer. "
-    "If no follow-up is possible, move on to another question from the resume. "
-    "Keep the conversation going with at least 20 questions or until the candidate finishes. "
+    "Ask one question at a time based on the candidate's answer, and follow up with relevant questions "
+    "derived from their response. If no follow-up is possible, move on to another question from the resume. "
+    "Ensure that questions are asked one by one, based on the user’s response and follow-up, "
+    "not all at once. Keep the conversation going with at least 20 questions or until the candidate finishes. "
     "Ask each question concisely, under 10 words, using natural question words like 'What', 'Why', 'How', etc. "
     "Resume: \n\n{resume}"
 )
+
 
 
 def check_need_to_continue(messages):
@@ -108,7 +135,7 @@ while True:
     messages.append(AIMessage(content=ai_msg.content))
 
     # User answers
-    user_input = input("You: ")
+    user_input = speech_to_text()
     if user_input.lower() == "exit":
         break
     messages.append(HumanMessage(content=user_input))
