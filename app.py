@@ -9,7 +9,7 @@ messages = []
 engine = pyttsx3.init()
 def text_to_speak(text):
     # Set voice properties if you want
-    engine.setProperty('rate', 120)  # Speed
+    engine.setProperty('rate', 130)  # Speed
     engine.setProperty('volume', 1.0)  # Volume (0.0 to 1.0)
     engine.say(text)
     engine.runAndWait()
