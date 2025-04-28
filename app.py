@@ -1,8 +1,18 @@
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
+import pyttsx3
 # Initialize model
 llm = ChatOllama(model="gemma3:latest")
 messages = []
+
+# Initialize text-to-speech engine
+engine = pyttsx3.init()
+def text_to_speak(text):
+    # Set voice properties if you want
+    engine.setProperty('rate', 120)  # Speed
+    engine.setProperty('volume', 1.0)  # Volume (0.0 to 1.0)
+    engine.say(text)
+    engine.runAndWait()
 
 # System prompt
 system_prompt = (
@@ -78,6 +88,7 @@ while True:
 
     if count == 10:  
         print(thank_you())
+        text_to_speak(thank_you())  # Convert thank you message to speech
         print(check_score(messages))
         break
 
@@ -85,6 +96,7 @@ while True:
         continue_decision = check_need_to_continue(messages)
         if continue_decision.lower() == "no":
             print(thank_you())
+            text_to_speak(thank_you())
             print(check_score(messages))
             break
 
@@ -92,6 +104,7 @@ while True:
     # AI asks a question
     ai_msg = llm.invoke(messages)
     print("AI:", ai_msg.content)
+    text_to_speak(ai_msg.content)  # Convert AI response to speech
     messages.append(AIMessage(content=ai_msg.content))
 
     # User answers

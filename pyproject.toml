@@ -8,4 +8,5 @@ dependencies = [
     "langchain>=0.3.24",
     "langchain-ollama>=0.3.2",
     "ollama>=0.4.8",
+    "pyttsx3>=2.98",
 ]
