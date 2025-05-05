@@ -1,6 +1,3 @@
-Great! Since your project uses **Ollama** (for running LLMs locally), here's the final polished version of your `README.md`, now updated to reflect **Ollama** as the local LLM backend.
-
----
 
 # 🧠 AI Interviewer
 
